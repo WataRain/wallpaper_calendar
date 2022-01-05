@@ -33,16 +33,16 @@ os.chdir(working_directory)
 events = []
 for calendar_url in calendar_urls:
     calendar = ics.Calendar(requests.get(calendar_url).text)
-    events += [((event.begin.year, event.begin.month, event.begin.day, event.begin.hour,  event.begin.minute), event) for event in calendar.events if event.begin > arrow.now() or event.end > arrow.now()]
-events = sorted(events, key=lambda x: x[0][0]*100000000 + x[0][1]*1000000 + x[0][2]*10000 + x[0][3]*100 + x[0][4])[:max_events]
+    events += [e for e in calendar.events if e.begin > arrow.now() or e.end > arrow.now()]
+events = sorted(events, key=lambda x: x.begin.year*100000000 + x.begin.month*1000000 + x.begin.day*10000 + x.begin.hour*100 + x.begin.minute)[:max_events]
 
 output = []
-for event_tuple in events:
-    monthday = event_tuple[1].begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime('%m/%d')
+for event in events:
+    monthday = event.begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime('%m/%d')
     if monthday == arrow.now().strftime('%m/%d'):
         monthday = 'Today'
-    time = event_tuple[1].begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime(f'{monthday}{pad}│{pad}%H:%M')
-    event = event_tuple[1].name
+    time = event.begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime(f'{monthday}{pad}│{pad}%H:%M')
+    event = event.name
     if len(event) > max_length:
         event = event[:max_length] + border_v
     else:
