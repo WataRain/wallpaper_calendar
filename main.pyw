@@ -29,8 +29,8 @@ working_directory = os.path.dirname(os.path.realpath(__file__))
 os.chdir(working_directory)
 calendar = ics.Calendar(requests.get(calendar_url).text)
 
-events = [((int(event.begin.strftime('%m')), int(event.begin.strftime('%d')), int(event.begin.strftime('%H')), int(event.begin.strftime('%M'))), event) for event in calendar.events if event.begin > arrow.now() or event.end > arrow.now()]
-events = sorted(events, key=lambda x: x[0][0]*1000000 + x[0][1]*10000 + x[0][2]*100 + x[0][3])[:max_events]
+events = [((int(event.begin.strftime('%y')), int(event.begin.strftime('%m')), int(event.begin.strftime('%d')), int(event.begin.strftime('%H')), int(event.begin.strftime('%M'))), event) for event in calendar.events if event.begin > arrow.now() or event.end > arrow.now()]
+events = sorted(events, key=lambda x: x[0][0]*100000000 + x[0][1]*1000000 + x[0][2]*10000 + x[0][3]*100 + x[0][4])[:max_events]
 
 output = []
 for event_tuple in events:
