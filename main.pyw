@@ -5,15 +5,17 @@ from PIL import ImageFont
 from PIL import ImageDraw 
 
 # Variables
-calendar_url = '' # Link to a calendar in .ics format
+calendar_urls = [
+    'https://calendar.google.com/calendar/ical/en.philippines%23holiday%40group.v.calendar.google.com/public/basic.ics'
+    ]
 timezone = 'Asia/Manila'
-img_path = '' # Path to wallpaper
-font_path = 'COURBD.TTF' # Path to font
+img_path = 'D:\Path\To\Wallpaper.jpg'
+font_path = 'COURBD.TTF'
 font_size = 24
 
-position = 'north' # Position of the calendar; any of center, north, south, east, west, northeast, northwest, southeast, southwest OR custom coordinates
+position = 'center' # Position of the calendar; any of center, north, south, east, west, northeast, northwest, southeast, southwest OR custom coordinates
 max_length = 48 # Max length of characters for each event name
-max_events = 16 # To display
+max_events = 18 # To display
 border_v = '│'
 border_h = '─'
 corner_ne = '┌'
@@ -27,14 +29,19 @@ pad = ' '
 # Program
 working_directory = os.path.dirname(os.path.realpath(__file__))
 os.chdir(working_directory)
-calendar = ics.Calendar(requests.get(calendar_url).text)
 
-events = [((int(event.begin.strftime('%y')), int(event.begin.strftime('%m')), int(event.begin.strftime('%d')), int(event.begin.strftime('%H')), int(event.begin.strftime('%M'))), event) for event in calendar.events if event.begin > arrow.now() or event.end > arrow.now()]
+events = []
+for calendar_url in calendar_urls:
+    calendar = ics.Calendar(requests.get(calendar_url).text)
+    events += [((event.begin.year, event.begin.month, event.begin.day, event.begin.hour,  event.begin.minute), event) for event in calendar.events if event.begin > arrow.now() or event.end > arrow.now()]
 events = sorted(events, key=lambda x: x[0][0]*100000000 + x[0][1]*1000000 + x[0][2]*10000 + x[0][3]*100 + x[0][4])[:max_events]
 
 output = []
 for event_tuple in events:
-    time = event_tuple[1].begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime(f'%m/%d{pad}│{pad}%H:%M')
+    monthday = event_tuple[1].begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime('%m/%d')
+    if monthday == arrow.now().strftime('%m/%d'):
+        monthday = 'Today'
+    time = event_tuple[1].begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime(f'{monthday}{pad}│{pad}%H:%M')
     event = event_tuple[1].name
     if len(event) > max_length:
         event = event[:max_length] + border_v
