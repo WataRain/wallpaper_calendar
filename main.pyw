@@ -8,7 +8,7 @@ from PIL import ImageDraw
 calendar_url = '' # Link to a calendar in .ics format
 timezone = 'Asia/Manila'
 img_path = '' # Path to wallpaper
-font_path = 'C:\Windows\Fonts\Courier New\COURBD.TTF' # Path to font
+font_path = 'COURBD.TTF' # Path to font
 font_size = 24
 
 position = 'north' # Position of the calendar; any of center, north, south, east, west, northeast, northwest, southeast, southwest OR custom coordinates
@@ -25,7 +25,8 @@ split_s = '┴'
 pad = ' '
 
 # Program
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
+working_directory = os.path.dirname(os.path.realpath(__file__))
+os.chdir(working_directory)
 calendar = ics.Calendar(requests.get(calendar_url).text)
 
 events = [((int(event.begin.strftime('%m')), int(event.begin.strftime('%d')), int(event.begin.strftime('%H')), int(event.begin.strftime('%M'))), event) for event in calendar.events if event.begin > arrow.now() or event.end > arrow.now()]
