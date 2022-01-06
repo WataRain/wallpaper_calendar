@@ -9,13 +9,14 @@ calendar_urls = [
     'https://calendar.google.com/calendar/ical/en.philippines%23holiday%40group.v.calendar.google.com/public/basic.ics'
     ]
 timezone = 'Asia/Manila'
-img_path = 'D:\Path\To\Wallpaper.jpg'
-font_path = 'COURBD.TTF'
+img_path = r'D:\Path\To\Wallpaper.jpg' # Path to wallpaper
+font_path = 'COURBD.TTF' # Path to font
 font_size = 24
-color = (255, 255, 255)
+font_color = (255, 255, 255) # RGB
+back_fill_color = (0, 0, 0, 128) # RGBA
 position = 'center' # Position of the calendar; any of center, north, south, east, west, northeast, northwest, southeast, southwest OR custom coordinates
-max_length = 48 # Max length of characters for each event name
-max_events = 18 # To display
+max_length = 50 # Max length of characters for each event name
+max_events = 20 # To display
 border_v = '│'
 border_h = '─'
 corner_ne = '┌'
@@ -57,6 +58,7 @@ draw_text += f'\n{corner_sw}{border_h*7}{split_s}{border_h*7}{split_s}' + border
 print(draw_text)
 
 img = Image.open(img_path)
+img.thumbnail((1920, 1080), Image.ANTIALIAS)
 draw = ImageDraw.Draw(img)
 font = ImageFont.truetype(font_path, font_size)
 
@@ -96,6 +98,11 @@ match position:
     case (x, y):
         x, y = x, y
 
-draw.text((x, y), draw_text, color, font=font)
+overlay = Image.new('RGBA', (width_img, height_img))
+overlay_draw = ImageDraw.Draw(overlay)
+overlay_draw.rectangle((x, y, x+width_textbox, y+height_textbox), fill=back_fill_color)
+img.paste(overlay, mask=overlay)
+draw.text((x, y), draw_text, font_color, font=font)
+
 img.save('wallpaper.jpg')
 ctypes.windll.user32.SystemParametersInfoW(20, 0, working_directory+'\wallpaper.jpg', 3)
