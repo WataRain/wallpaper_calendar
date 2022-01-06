@@ -12,7 +12,7 @@ timezone = 'Asia/Manila'
 img_path = 'D:\Path\To\Wallpaper.jpg'
 font_path = 'COURBD.TTF'
 font_size = 24
-
+color = (255, 255, 255)
 position = 'center' # Position of the calendar; any of center, north, south, east, west, northeast, northwest, southeast, southwest OR custom coordinates
 max_length = 48 # Max length of characters for each event name
 max_events = 18 # To display
@@ -41,13 +41,14 @@ for event in events:
     monthday = event.begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime('%m/%d')
     if monthday == arrow.now().strftime('%m/%d'):
         monthday = 'Today'
-    time = event.begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime(f'{monthday}{pad}│{pad}%H:%M')
-    event = event.name
-    if len(event) > max_length:
-        event = event[:max_length] + border_v
+    hourminute = event.begin.astimezone(arrow.now(tz=timezone).tzinfo).strftime('%H:%M')
+    time = f'{monthday}{pad}{border_v}{pad}{hourminute}'
+    event_name_display = event.name
+    if len(event_name_display) > max_length:
+        event_name_display = event_name_display[:max_length] + border_v
     else:
-        event = event.ljust(max_length, pad) + border_v
-    line = f'{border_v}{pad}{time}{pad}{border_v}{pad}{event}'
+        event_name_display = event_name_display.ljust(max_length, pad) + border_v
+    line = f'{border_v}{pad}{time}{pad}{border_v}{pad}{event_name_display}'
     output.append(line)
 
 draw_text = f'{corner_ne}{border_h}Date{border_h*2}{split_n}{border_h}Time{border_h*2}{split_n}{border_h*1}Event' + border_h*(max_length-5) + corner_nw + '\n'
@@ -95,6 +96,6 @@ match position:
     case (x, y):
         x, y = x, y
 
-draw.text((x, y), draw_text, (255, 255, 255), font=font)
+draw.text((x, y), draw_text, color, font=font)
 img.save('wallpaper.jpg')
 ctypes.windll.user32.SystemParametersInfoW(20, 0, working_directory+'\wallpaper.jpg', 3)
